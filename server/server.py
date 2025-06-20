@@ -23,14 +23,14 @@ def handle_client(conn, addr):
             return
 
         parts = data[5:].split(";")
-        host, user, ip = parts[:3]
+        host, user, ip, domain = parts[:4]
 
         client_id = str(uuid.uuid4())
 
         clients[client_id] = conn
         client_info[client_id] = {
             "public_ip": addr[0],
-            "local_ip": ip,
+            "domain": domain,
             "user": user,
             "host": host,
             "last_active": None

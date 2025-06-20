@@ -14,7 +14,7 @@ async function fetchClients() {
                 <th>Имя ПК</th>
                 <th>Пользователь</th>
                 <th>Публичный IP</th>
-                <th>Локальный IP</th>
+                <th>Домен</th>
                 <th>Последняя активность</th>
                 <th>Действия</th>
             </tr>
@@ -26,7 +26,7 @@ async function fetchClients() {
                 <td>${info.host}</td>
                 <td>${info.user}</td>
                 <td>${info.public_ip}</td>
-                <td>${info.local_ip}</td>
+                <td>${info.domain}</td>
                 <td>${info.last_active}</td>
                 <td class="actions">
                     <a class="button screenshot" href="/screenshot/${cid}" target="_blank">Скриншот</a>
