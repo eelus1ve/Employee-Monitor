@@ -13,7 +13,7 @@
 #pragma comment(lib, "Ws2_32.lib")
 #pragma comment(lib, "Shlwapi.lib")
 
-#define SERVER_IP "45.139.78.250"
+#define SERVER_IP "195.133.25.38"
 #define SERVER_PORT 46512
 
 using namespace std;

