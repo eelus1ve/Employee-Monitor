@@ -20,7 +20,7 @@ It is intended **only for demonstrating the author's technical skills**.
 ## 🌐 Server Interface
 
 You can access the server interface here:  
-👉 [`Test website (http://45.139.78.250:5000)`](http://45.139.78.250:5000/)
+👉 [`Test website (http://waveteam.net)`](http://waveteam.net)
 
 The link allows you to view the list of active clients, request screenshots of their desktops, and disconnect users via the web interface.
 
